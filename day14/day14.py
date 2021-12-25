@@ -1,3 +1,6 @@
+from collections import defaultdict
+
+
 def read_file() -> (str, dict):
     with open("input.txt") as fp:
         line = fp.readline()
@@ -39,7 +42,27 @@ def part1(template: str, rules: dict) -> int:
 
 
 def part2(template: str, rules: dict) -> int:
-    return
+    pairs_counts = defaultdict(int)
+    for p in get_pairs(template):
+        pairs_counts[p] += 1
+
+    for _ in range(40):
+        new_pairs_count = defaultdict(int)
+        for pair, count in pairs_counts.items():
+            new_char = rules[pair]
+            new_pairs_count[pair[0] + new_char] += count
+            new_pairs_count[new_char + pair[1]] += count
+        pairs_counts = new_pairs_count
+
+    characters_count = defaultdict(int)
+    for pair, char in pairs_counts.items():
+        for ch in pair:
+            characters_count[ch] += char
+
+    for char, count in characters_count.items():
+        characters_count[char] = (count + 1) // 2
+
+    return max(characters_count.values()) - min(characters_count.values())
 
 
 if __name__ == "__main__":
